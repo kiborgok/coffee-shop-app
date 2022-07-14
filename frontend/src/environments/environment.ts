@@ -9,6 +9,6 @@ export const environment = {
     url: "kiborgok-dev", // the auth0 domain prefix
     audience: "coffee-shop", // the audience set for the auth0 app
     clientId: "qOtxXC0ThFWHNCTL2PtU9HN1dAGV6yKC", // the client id generated for the auth0 app
-    callbackURL: "https://127.0.0.1:8100", // the base url of the running ionic application.
+    callbackURL: "http://localhost:8100", // the base url of the running ionic application.
   },
 };
