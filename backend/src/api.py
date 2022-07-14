@@ -29,6 +29,7 @@ def after_request(response):
                          'GET,PUT,POST,DELETE,OPTIONS')
     return response
 
+
 # ROUTES
 '''
 @TODO implement endpoint
@@ -60,7 +61,6 @@ def get_drinks():
 '''
 
 
-
 @app.route('/drinks-detail', methods=['GET'])
 @requires_auth("get:drinks-detail")
 def get_drinks_detail(payload):
@@ -69,12 +69,12 @@ def get_drinks_detail(payload):
         formatted_drinks = [drink.long() for drink in drinks]
     except AuthError as e:
         abort(e)
-    except:
+    except BaseException:
         abort(422)
     return jsonify({
-            "success": True,
-            "drinks": formatted_drinks
-        }), 200
+        "success": True,
+        "drinks": formatted_drinks
+    }), 200
 
 
 '''
@@ -86,7 +86,6 @@ def get_drinks_detail(payload):
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the newly created drink
         or appropriate status code indicating reason for failure
 '''
-
 
 
 @app.route('/drinks', methods=['POST'])
@@ -102,7 +101,7 @@ def make_drink(payload):
             drink.insert()
     except AuthError as ex:
         abort(ex)
-    except:
+    except BaseException:
         abort(422)
     return jsonify({
         "success": True,
@@ -121,7 +120,6 @@ def make_drink(payload):
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the updated drink
         or appropriate status code indicating reason for failure
 '''
-
 
 
 @app.route('/drinks/<int:id>', methods=['PATCH'])
@@ -143,13 +141,12 @@ def update_drink(payload, id):
         drink.update()
     except AuthError as ex:
         abort(ex)
-    except:
+    except BaseException:
         abort(422)
     return jsonify({
         "success": True,
         "drinks": [drink.long()]
     }), 200
-
 
 
 '''
@@ -166,7 +163,7 @@ def update_drink(payload, id):
 
 @app.route('/drinks/<int:id>', methods=['DELETE'])
 @requires_auth(permission='delete:drinks')
-def delete_drink(payload,id):
+def delete_drink(payload, id):
     try:
         drink = Drink.query.filter(Drink.id == id).one_or_none()
         if drink is None:
@@ -174,7 +171,7 @@ def delete_drink(payload,id):
         drink.delete()
     except AuthError as ex:
         abort(ex)
-    except:
+    except BaseException:
         abort(422)
     return jsonify({
         "success": True,
