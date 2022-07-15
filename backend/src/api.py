@@ -18,7 +18,7 @@ CORS(app)
 !! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
 !! Running this funciton will add one
 '''
-# db_drop_and_create_all()
+db_drop_and_create_all()
 
 
 @app.after_request
@@ -67,14 +67,12 @@ def get_drinks_detail(payload):
     try:
         drinks = Drink.query.all()
         formatted_drinks = [drink.long() for drink in drinks]
+        return jsonify({
+            "success": True,
+            "drinks": formatted_drinks
+        }), 200
     except AuthError as e:
         abort(e)
-    except BaseException:
-        abort(422)
-    return jsonify({
-        "success": True,
-        "drinks": formatted_drinks
-    }), 200
 
 
 '''
@@ -97,16 +95,14 @@ def make_drink(payload):
         title = body.get('title', None)
         recipe = body.get('recipe', None)
         if title and recipe:
-            drink = Drink(title=title, recipe=json.dumps(recipe))
+            drink = Drink(title=title, recipe=json.dumps([recipe]))
             drink.insert()
+        return jsonify({
+            "success": True,
+            "drinks": [drink.long()]
+        }), 200
     except AuthError as ex:
         abort(ex)
-    except BaseException:
-        abort(422)
-    return jsonify({
-        "success": True,
-        "drinks": [drink.long()]
-    }), 200
 
 
 '''
@@ -139,14 +135,12 @@ def update_drink(payload, id):
             recipe = json.dumps(recipe)
             drink.recipe = recipe
         drink.update()
+        return jsonify({
+            "success": True,
+            "drinks": [drink.long()]
+        }), 200
     except AuthError as ex:
         abort(ex)
-    except BaseException:
-        abort(422)
-    return jsonify({
-        "success": True,
-        "drinks": [drink.long()]
-    }), 200
 
 
 '''
@@ -162,21 +156,19 @@ def update_drink(payload, id):
 
 
 @app.route('/drinks/<int:id>', methods=['DELETE'])
-@requires_auth(permission='delete:drinks')
+@requires_auth( 'delete:drinks')
 def delete_drink(payload, id):
     try:
         drink = Drink.query.filter(Drink.id == id).one_or_none()
         if drink is None:
             abort(404)
         drink.delete()
+        return jsonify({
+            "success": True,
+            "delete": drink.id
+        })
     except AuthError as ex:
         abort(ex)
-    except BaseException:
-        abort(422)
-    return jsonify({
-        "success": True,
-        "delete": drink.id
-    })
 
 
 # Error Handling
