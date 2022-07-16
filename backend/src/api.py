@@ -103,6 +103,8 @@ def make_drink(payload):
         }), 200
     except AuthError as ex:
         abort(ex)
+    except:
+        abort(422)
 
 
 '''
